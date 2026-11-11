@@ -30,7 +30,7 @@ Every file in this tree that carries an `SPDX-License-Identifier: GPL-3.0-only` 
 
 - the firmware: `firmware/` (the LOCUS app and the demo app, the system layer, the HAL, the update loader)
 - the build scripts and tools: `build.sh`, `tools/` (not `tools/sdk/`, below)
-- the web installer and its tests: `web/`
+- the web installer and its tests: `web/` (not `web/emu/`, below)
 - the host simulator and tests: `host/`
 
 ## Platform and third-party material
@@ -44,6 +44,8 @@ Every file in this tree that carries an `SPDX-License-Identifier: GPL-3.0-only` 
 | Rings and Clouds (Mutable Instruments) by Emilie Gillet (<https://github.com/pichenettes/eurorack>, commit `08460a69`), and stmlib (commit `d18def81`): the resonator's and the granular processor's DSP, patched (`third_party/eurorack/PATCHES.md`) | MIT | `third_party/eurorack/`, `LICENSES/MIT-Emilie-Gillet.txt` |
 | Terminus font by Dimitar Toshkov Zhekov: the UI text, rasterised into the firmware at build time (`tools/gen_font.py`) | SIL OFL 1.1 | `assets/fonts/ter-u16n.bdf`, `LICENSES/OFL-Terminus.txt` |
 | JieLi AC79 SDK by JieLi Technology: three of its files go into every `.fwsc` package (below) | Apache-2.0 | `tools/sdk/`, `LICENSES/Apache-2.0-JieLi-SDK.txt` |
+| FM-1Ception (<https://github.com/stevexfer/FM-1Ception>), a fork of fm1-emu by Joakim Eriksson (<https://github.com/joakimeriksson/fm1-emu>): the browser emulator on the site, built by `tools/vendor_emu.sh` (the commit is in `web/emu/VERSION`) | MIT | `web/emu/`, `web/emu/LICENSE` |
+| Kalimba samples from Serum 2's factory content by Steve Duda (Xfer Records): the emulator's USB audio input, published by their owner for use in the emulator page only | none (not GPL or MIT) | `web/emu/kalimba/`, `web/emu/kalimba/NOTICE.txt` |
 
 ## JieLi SDK files in the packages (Apache-2.0)
 
