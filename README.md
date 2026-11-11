@@ -45,7 +45,8 @@ the resonator at 48 kHz, the granular processor at 32 kHz with its full 184 KB o
 - **USB audio** both ways, named "LOCUS FM-1": the computer plays into the routing; it records what the FM-1 plays.
 - **MIDI in** (USB and TRS): notes strum (velocity 100 and up accented), start / stop the sequencer, program change
   selects the pattern.
-- **SAVE**, twice: the settings and the 8 patterns, kept in flash and loaded at power-on.
+- **SAVE**, twice: the settings and the 8 patterns, kept in flash and loaded at power-on (the sound stops for a
+  moment while the flash is written).
 
 ## Controls
 
