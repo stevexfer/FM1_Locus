@@ -29,7 +29,7 @@ REPO = "https://github.com/stevexfer/FM1_Locus"
 PAGE = ["index.html", "installer.js", "fm1ota.js", "fm1pkg.js"]
 LOADER_MARK = b"FELUCCA-LOADER-1"
 PACKAGES = [
-    {"id": "locus", "suffix": "", "title": "FM1_Locus", "tag": "",
+    {"id": "locus", "suffix": "", "title": "FM-1 Locus", "tag": "",
      "desc": "A modal resonator into a granular processor, USB audio routing, step sequencer and chance triggers, 48 kHz."},
 ]
 
