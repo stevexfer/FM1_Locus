@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-3.0-only
- * Copyright (C) 2026 npi3pak */
+ * Copyright (C) 2026 npi3pak
+ * Modified for FM1_Locus, 2026: the second core and its clock (none: the app's own work), APP_IDLE */
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -63,6 +64,16 @@ static int usb_play_read(int16_t *d, uint32_t n)
     return 1;
 }
 
+/* the second core (sys/core1.c): none here, the app does the work itself */
+int fw_core1_run(void (*fn)(uint32_t), uint32_t arg)
+{
+    (void)fn;
+    (void)arg;
+    return 0;
+}
+int fw_core1_wait(void) { return 0; }
+uint32_t fw_ticks(void) { return (uint32_t)((uint64_t)clock() * 24000000u / CLOCKS_PER_SEC); }
+
 #include "libc.c"
 #include "lcd.c"
 #include "gfx.c"
@@ -95,6 +106,9 @@ static void host_frames(uint32_t n)
         host_render_until(fm1_ms);
         fw_input_read(&in);
         app_frame(&in);
+#ifdef APP_IDLE
+        app_idle();
+#endif
     }
 }
 

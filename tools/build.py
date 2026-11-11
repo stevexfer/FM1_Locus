@@ -56,7 +56,7 @@ CFPUFLAGS = ["-mcpu=r3", "-mfprev1", "-O2", "-std=gnu99", "-fno-math-errno", "-f
 CFPUFLAGS = ["-mcpu=r3", "-mfprev1", "-O2", "-std=gnu99", "-fno-math-errno", "-fno-builtin-printf",
              "-ffunction-sections", "-fdata-sections", "-Wall", "-Wno-unused-function", "-Wframe-larger-than=1024",
              "-Ifirmware/sys"]
-APP = os.environ.get("FW_APP", "audiobase")   # firmware/apps/APP: --app
+APP = os.environ.get("FW_APP", "locus")   # firmware/apps/APP: --app
 FS48 = os.environ.get("FW_FS48", "1") == "1"   # the 48 kHz codec clock, the default (firmware/sys/fw_rate.h); --fs 44
 CXX_TARGET_ONLY = ["firmware/cxx/runtime.cc"]
 LIBS = ["libm.a", "libcompiler_rt.a"]

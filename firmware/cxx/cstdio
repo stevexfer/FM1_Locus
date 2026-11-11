@@ -1,0 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-only
+#ifndef FW_CXX_CSTDIO
+#define FW_CXX_CSTDIO
+#include <stdio.h>
+#endif

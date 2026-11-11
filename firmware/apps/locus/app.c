@@ -4,6 +4,7 @@
  * sys/usb.c (FW_USB_PLAY in, FELUCCA_UAC out; build.txt). */
 #include "ab_fw.h"
 #include "avis.h"
+#include "locus.h"
 
 #if !FW_USB_PLAY || !FELUCCA_UAC
 #error "audiobase: build.txt defines FW_USB_PLAY=1 and FELUCCA_UAC=1"
@@ -18,6 +19,7 @@ enum { PAGE_MAIN, PAGE_VIS, PAGE_COUNT }; /* GLO steps through them */
 static volatile int32_t ab_gain_target;     /* Q15: the main loop's, from MASTER */
 static int32_t ab_gain;                     /* Q15: ramped to the target over a block */
 static int16_t ab_in[2u * FW_BLOCK];
+static int16_t ab_out[2u * FW_BLOCK];
 static int16_t ab_scope[AB_SCOPE];
 static volatile uint32_t ab_scope_w;
 static volatile uint32_t ab_meter[2];       /* the peak before the volume, 0..32767, falling ~24 dB/s */
@@ -159,9 +161,16 @@ static void draw_main(int play, int rec, int32_t gain)
     }
 }
 
+#define APP_IDLE
+static void app_idle(void)
+{
+    le_prepare();
+}
+
 static void app_init(void)
 {
     usb_play_enable(1);
+    le_init();
 }
 
 static void app_frame(const fw_input_t* in)
@@ -169,9 +178,16 @@ static void app_frame(const fw_input_t* in)
     const int play = usb_play_state(), rec = usb_rec_state();
     const int32_t gain = master_gain(in->master);
     fw_midi_t m;
+    le_prepare();
     ab_gain_target = gain;
     while (fw_midi_read(&m))   /* (drained: a full ring would hold the host's SysEx back too) */
         midi_seen_ms = in->ms;
+    {
+        uint32_t k;
+        for (k = 0; k < FW_KEYS; k++)
+            if (in->keys_pressed & FW_BIT(k))
+                le_event(LE_EV_STRUM | LE_EV_GRAIN, (int32_t)(FW_KEY_BASE_NOTE + k));
+    }
     if (in->pressed & FW_BIT(FW_BTN_GLO)) {
         page = (page + 1) % PAGE_COUNT;
         if (page == PAGE_VIS)
@@ -194,10 +210,10 @@ static void app_audio(int32_t* lr, uint32_t frames)
     const int32_t g1 = ab_gain_target, step = (g1 - ab_gain) / (int32_t)frames;
     int32_t g = ab_gain;
     uint32_t i, pk[2] = { 0, 0 }, w = ab_scope_w;
-    if (!(usb_play_begin() && usb_play_read(ab_in, frames)))
-        memset(ab_in, 0, frames * 2u * sizeof ab_in[0]);
+    const int heard = usb_play_begin() && usb_play_read(ab_in, frames);
+    le_render(ab_out, heard ? ab_in : 0, frames);
     for (i = 0; i < frames; i++) {
-        const int32_t l = ab_in[2u * i], r = ab_in[2u * i + 1u];
+        const int32_t l = ab_out[2u * i], r = ab_out[2u * i + 1u];
         const uint32_t al = (uint32_t)(l < 0 ? -l : l), ar = (uint32_t)(r < 0 ? -r : r);
         pk[0] = al > pk[0] ? al : pk[0];
         pk[1] = ar > pk[1] ? ar : pk[1];

@@ -2,7 +2,8 @@
  * Copyright (C) 2026 Leo Kuroshita (@kurogedelic), Hügelton Instruments
  * Modified for GATOR by npi3pak, 2026, from ORBIT 0.6.0 (dspaudio/orbit)
  * Modified for MOOD_FM1, 2026: FW_UBOOT_LABELS, FW_USB_PLAY
- * Modified for FM1_AudioBase, 2026: the USB audio input's packets nested in the render (FELUCCA_UAC) */
+ * Modified for FM1_AudioBase, 2026: the USB audio input's packets nested in the render (FELUCCA_UAC)
+ * Modified for FM1_Locus, 2026: the app's background work in the main loop's spare time (APP_IDLE) */
 extern uint32_t _data_start[], _data_end[], _data_load[], _bss_start[], _bss_end[];
 extern uint32_t _pool_start[], _pool_end[], _rt_start[], _rt_end[], _rt_load[];
 #if FM1_CPU1_USED
@@ -222,8 +223,12 @@ static void fw_main(void)
         fw_stats.usb_up = usb.config && !usb.suspended;
         fw_input_read(&in);
         app_frame(&in);
-        while (fm1_ms - m < FW_FRAME_MS)
+        while (fm1_ms - m < FW_FRAME_MS) {
             fw_service_usb();
+#ifdef APP_IDLE
+            app_idle();   /* the app's background work: short steps, the main loop's spare time */
+#endif
+        }
     }
 }
 

@@ -3,7 +3,7 @@
 """Build the host simulator (the app's C code with a stub HAL) and run a script.
 
   tools/sim.py [SCRIPT]          default script: host/<app>.sim
-  tools/sim.py --app demo        another firmware/apps/ app (default: audiobase)
+  tools/sim.py --app demo        another firmware/apps/ app (default: locus)
   tools/sim.py --no-sanitize     faster build, no ASan/UBSan
   tools/sim.py --test            host tests (flash storage) instead of a script
 

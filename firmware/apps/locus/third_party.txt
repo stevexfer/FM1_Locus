@@ -1,0 +1,3 @@
+third_party/eurorack/rings
+third_party/eurorack/clouds
+third_party/eurorack/stmlib

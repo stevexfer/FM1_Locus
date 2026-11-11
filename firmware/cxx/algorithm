@@ -31,6 +31,34 @@ inline Out copy(In first, In last, Out out) {
 }
 
 template <typename It>
+inline It max_element(It first, It last) {
+    It best = first;
+    if (first == last)
+        return last;
+    while (++first != last)
+        if (*best < *first)
+            best = first;
+    return best;
+}
+
+template <typename It>
+inline It rotate(It first, It middle, It last) {
+    if (first == middle)
+        return last;
+    if (middle == last)
+        return first;
+    It ret = first + (last - middle);
+    for (It next = middle; first != next;) {
+        swap(*first++, *next++);
+        if (next == last)
+            next = middle;
+        else if (first == middle)
+            middle = next;
+    }
+    return ret;
+}
+
+template <typename It>
 inline void sort(It first, It last) {
     for (It i = first; i != last; ++i) {
         for (It j = i; j != first && *j < *(j - 1); --j)

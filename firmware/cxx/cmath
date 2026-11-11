@@ -2,4 +2,21 @@
 #ifndef FW_CXX_CMATH
 #define FW_CXX_CMATH
 #include <math.h>
+
+// The C library declares the double versions only; these keep float arguments in single precision (the FPU's).
+inline float fabs(float x) { return fabsf(x); }
+inline float sqrt(float x) { return sqrtf(x); }
+inline float floor(float x) { return floorf(x); }
+
+namespace std {
+using ::cos;
+using ::sin;
+using ::fabs;
+using ::sqrt;
+using ::floor;
+inline float cos(float x) { return cosf(x); }
+inline float sin(float x) { return sinf(x); }
+inline int abs(int x) { return x < 0 ? -x : x; }
+}
+
 #endif
