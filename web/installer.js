@@ -12,7 +12,7 @@ const MSG = {
     ready: "Connect the FM-1 and press Install.",
     fetching: "Loading the package…",
     badsha: "The package on the site is damaged (SHA-256 mismatch). Reload the page.",
-    notours: "Not an FM1_AudioBase package: ",
+    notours: "Not an FM1_Locus package: ",
     start: "Talking to the FM-1…",
     verify: "The FM-1 checks the package…",
     loader: "Switching to update mode…",

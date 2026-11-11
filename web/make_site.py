@@ -4,12 +4,12 @@
 """Make the installer site, a static folder for GitHub Pages (or any HTTPS / localhost server):
 
   index.html installer.js fm1ota.js fm1pkg.js            the page (web/)
-  firmware/audiobase-VERSION.fwsc                        the package
+  firmware/locus-VERSION.fwsc                        the package
   firmware/manifest.json                                 its title, identity, size and SHA-256 (the page checks it)
-  firmware/SHA256SUMS LICENSE LICENSING.md LICENSES/     what goes with the package (GPL-3.0, the SDK's Apache-2.0)
+  firmware/SHA256SUMS LICENSE LICENSING.md LICENSES/     what goes with the package (GPL-3.0, the SDK's Apache-2.0, the eurorack code's MIT)
 
   python3 web/make_site.py --release build/release-X.Y   the release folder of tools/release.py
-  python3 web/make_site.py                               the local build: build/audiobase.fwsc
+  python3 web/make_site.py                               the local build: build/locus.fwsc
   python3 -m http.server -d build/site 8000              then http://localhost:8000 in Chrome or Edge
 """
 import argparse
@@ -25,11 +25,11 @@ SRC = HERE.parent
 sys.path.insert(0, str(SRC / "tools"))
 import fm1_install  # noqa: E402
 
-REPO = "https://github.com/stevexfer/FM1_AudioBase"
+REPO = "https://github.com/stevexfer/FM1_Locus"
 PAGE = ["index.html", "installer.js", "fm1ota.js", "fm1pkg.js"]
 LOADER_MARK = b"FELUCCA-LOADER-1"
 PACKAGES = [
-    {"id": "audiobase", "suffix": "", "title": "FM1_AudioBase", "tag": "",
+    {"id": "locus", "suffix": "", "title": "FM1_Locus", "tag": "",
      "desc": "USB audio through the M-VAVE FM-1, with its volume and a visualizer, 48 kHz."},
 ]
 
@@ -52,8 +52,8 @@ def describe(meta, file, raw, version):
 def sources(a):
     if a.release:
         version = a.version or a.release.name.removeprefix("release-")
-        return version, a.release, [(m, f"audiobase-{version}{m['suffix']}.fwsc") for m in PACKAGES]
-    return a.version or fw_version(), a.build, [(m, f"audiobase{m['suffix']}.fwsc") for m in PACKAGES]
+        return version, a.release, [(m, f"locus-{version}{m['suffix']}.fwsc") for m in PACKAGES]
+    return a.version or fw_version(), a.build, [(m, f"locus{m['suffix']}.fwsc") for m in PACKAGES]
 
 
 def main():

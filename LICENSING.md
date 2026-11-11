@@ -1,33 +1,34 @@
-# FM1_AudioBase licensing
+# FM1_Locus licensing
 
-FM1_AudioBase is free software, licensed under the GNU General Public License, version 3 only (`GPL-3.0-only`, full
+FM1_Locus is free software, licensed under the GNU General Public License, version 3 only (`GPL-3.0-only`, full
 text in `LICENSE`). That covers the firmware, the tools, the web installer and the tests. A few bundled parts keep
 their own licences; they are listed below, and their licence texts are in `LICENSES/`.
 
-FM1_AudioBase is a fork of MOOD_FM1 (the FM-1 port of MOOD), itself a copy of GATOR (Copyright (C) 2026 npi3pak),
-which is built on the Felucca platform, Copyright (C) 2026 Leo Kuroshita (@kurogedelic), Hügelton Instruments
-(GPL-3.0-only), through SLOOP and ORBIT. The files taken from them keep their copyright headers. Its visualizer
-(`firmware/apps/audiobase/avis.c`) is MOOD_FM1's audio visualizer.
+FM1_Locus is a fork of FM1_AudioBase, a fork of MOOD_FM1 (the FM-1 port of MOOD), itself a copy of GATOR
+(Copyright (C) 2026 npi3pak), which is built on the Felucca platform, Copyright (C) 2026 Leo Kuroshita
+(@kurogedelic), Hügelton Instruments (GPL-3.0-only), through SLOOP and ORBIT. The files taken from them keep their copyright headers. Its visualizer
+(`firmware/apps/locus/avis.c`) is MOOD_FM1's audio visualizer.
 
-You may use, study, change and share FM1_AudioBase under the GPL. If you distribute it, or firmware derived from it,
+You may use, study, change and share FM1_Locus under the GPL. If you distribute it, or firmware derived from it,
 you must also give your recipients its complete corresponding source under the same licence.
 
-FM1_AudioBase is provided without any warranty (GPL-3.0 sections 15 and 16). Installing it is at your own risk.
+FM1_Locus is provided without any warranty (GPL-3.0 sections 15 and 16). Installing it is at your own risk.
 
 **Source code.** The complete corresponding source of every released package is the tag `vX.Y` of
-<https://github.com/stevexfer/FM1_AudioBase> (GitHub attaches its archives to the release); the web installer links
+<https://github.com/stevexfer/FM1_Locus> (GitHub attaches its archives to the release); the web installer links
 the source of the version it installs. `BUILDING.md` describes how to build it.
 
 **Modified files.** Files changed from what they were taken from keep their copyright lines and carry a line per
 change: "Modified for GATOR by npi3pak, 2026, from ORBIT 0.6.0", "Modified for MOOD_FM1, 2026: …", "Modified for
-FM1_AudioBase, 2026: …". Files without such a line are unchanged (the HAL, and the update loader's code, whose binary
+FM1_AudioBase, 2026: …", "Modified for FM1_Locus, 2026: …"; the patches to the eurorack code are marked `FM1_Locus` and
+listed in `third_party/eurorack/PATCHES.md`. Files without such a line are unchanged (the HAL, and the update loader's code, whose binary
 is byte-identical to ORBIT's).
 
 ## What is GPL-3.0-only
 
 Every file in this tree that carries an `SPDX-License-Identifier: GPL-3.0-only` header:
 
-- the firmware: `firmware/` (the AudioBase app and the demo app, the system layer, the HAL, the update loader)
+- the firmware: `firmware/` (the LOCUS app and the demo app, the system layer, the HAL, the update loader)
 - the build scripts and tools: `build.sh`, `tools/` (not `tools/sdk/`, below)
 - the web installer and its tests: `web/`
 - the host simulator and tests: `host/`
@@ -40,6 +41,7 @@ Every file in this tree that carries an `SPDX-License-Identifier: GPL-3.0-only` 
 | ORBIT by dspaudio (<https://github.com/dspaudio/orbit>), a fork of SLOOP: the platform GATOR was cut down from | GPL-3.0-only | as above |
 | SLOOP by isod89 (<https://github.com/isod89/sloop-fm1>), a fork of Felucca: the web install protocol (`fm1ota.js`, `fm1pkg.js`, unchanged from SLOOP 2.7), the stock supply levels at start | GPL-3.0-only | `web/fm1ota.js`, `web/fm1pkg.js`, `firmware/hal/fm1_sys.h` |
 | ChoralRoot by Quixotic7 (<https://github.com/Quixotic7/ChoralRootFM1>): the order of the audio interrupt's acknowledge (0.18); the release and Pages workflows follow its layout | GPL-3.0-only | `firmware/sys/audio.c`, `.github/workflows/` |
+| Rings and Clouds (Mutable Instruments) by Emilie Gillet (<https://github.com/pichenettes/eurorack>, commit `08460a69`), and stmlib (commit `d18def81`): the resonator's and the granular processor's DSP, patched (`third_party/eurorack/PATCHES.md`) | MIT | `third_party/eurorack/`, `LICENSES/MIT-Emilie-Gillet.txt` |
 | Terminus font by Dimitar Toshkov Zhekov: the UI text, rasterised into the firmware at build time (`tools/gen_font.py`) | SIL OFL 1.1 | `assets/fonts/ter-u16n.bdf`, `LICENSES/OFL-Terminus.txt` |
 | JieLi AC79 SDK by JieLi Technology: three of its files go into every `.fwsc` package (below) | Apache-2.0 | `tools/sdk/`, `LICENSES/Apache-2.0-JieLi-SDK.txt` |
 
@@ -61,15 +63,17 @@ release (`tools/release.py`) and the site (`web/make_site.py`, next to the packa
 
 ## No vendor material
 
-No M-VAVE material is part of FM1_AudioBase. The firmware links no vendor code and contains no vendor data. The web
+No M-VAVE material is part of FM1_Locus. The firmware links no vendor code and contains no vendor data. The web
 installer's "Back to the official firmware" holds only the official file's size and SHA-256: you select the file you
 downloaded from M-VAVE yourself, and it is checked and installed in your browser, never uploaded or redistributed.
 
 ## Trademarks
 
-"M-VAVE" and "FM-1" are trademarks of their respective owners. FM1_AudioBase is independent firmware that runs on
-FM-1 hardware; it is not affiliated with, endorsed by or supported by them. It names itself "FM-1" on USB so that the
-computer and the installers recognise the device.
+"M-VAVE" and "FM-1" are trademarks of their respective owners. FM1_Locus is independent firmware that runs on
+FM-1 hardware; it is not affiliated with, endorsed by or supported by them. It names itself "LOCUS FM-1" on USB so that
+the computer and the installers recognise the device. "Mutable Instruments", "Rings" and "Clouds" are Emilie Gillet's:
+the firmware uses her MIT-licensed code under its own names (RESONATOR, LOCUS) and is not affiliated with or endorsed
+by Mutable Instruments.
 
 ## Contributions
 

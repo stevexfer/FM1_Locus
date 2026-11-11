@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-only
-# Build an FM1_AudioBase release (BUILDING.md, "Releasing").
+# Build an FM1_Locus release (BUILDING.md, "Releasing").
 #   push of a tag vX.Y  -> build the package (tools/release.py), test it, create or update the GitHub release vX.Y
 #                          with the package, SHA256SUMS and the licences, then start pages.yml
 #   workflow_dispatch   -> build only; the release folder is a workflow artifact
@@ -88,7 +88,7 @@ jobs:
           ulimit -n 8192 || true
           python3 tools/release.py "$VERSION"
           rel="build/release-$VERSION"
-          for f in "audiobase-$VERSION.fwsc" SHA256SUMS LICENSE LICENSING.md; do
+          for f in "locus-$VERSION.fwsc" SHA256SUMS LICENSE LICENSING.md; do
             if [ ! -s "$rel/$f" ]; then
               echo "::error::$rel/$f is missing"
               exit 1
@@ -103,12 +103,12 @@ jobs:
           rel="build/release-$VERSION"
           python3 tools/sim.py
           python3 tools/sim.py --test
-          node web/test_web.mjs "$rel/audiobase-$VERSION.fwsc"
+          node web/test_web.mjs "$rel/locus-$VERSION.fwsc"
           python3 web/make_site.py --release "$rel"
 
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: audiobase-${{ env.VERSION }}
+          name: locus-${{ env.VERSION }}
           path: build/release-${{ env.VERSION }}/
           if-no-files-found: error
 
@@ -130,14 +130,14 @@ jobs:
 
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: audiobase-${{ needs.build.outputs.version }}
+          name: locus-${{ needs.build.outputs.version }}
           path: release
 
       - name: Collect the release assets
         run: |
           set -euo pipefail
           mkdir assets
-          for f in "audiobase-$VERSION.fwsc" SHA256SUMS LICENSE LICENSING.md LICENSES.zip; do
+          for f in "locus-$VERSION.fwsc" SHA256SUMS LICENSE LICENSING.md LICENSES.zip; do
             cp "release/$f" assets/
           done
           ls -l assets
@@ -148,13 +148,13 @@ jobs:
           {
             if [ -f "docs/releases/$VERSION.md" ]; then cat "docs/releases/$VERSION.md"; echo; echo "---"; echo; fi
             sed "s/@VERSION@/$VERSION/g" <<'EOT'
-          FM1_AudioBase @VERSION@ for the M-VAVE FM-1: the computer's audio over USB through the FM-1 to its outputs and back to the computer as a USB audio input, MASTER the volume, GLO a visualizer.
+          FM1_Locus @VERSION@ for the M-VAVE FM-1: a modal resonator into a granular processor, the computer's USB audio routed into either or both, an XOX step sequencer and four chance triggers; back to the computer as a USB audio input.
 
-          Install from the browser at https://stevexfer.github.io/FM1_AudioBase/ (Chrome or Edge, the FM-1 connected by USB), or with the command-line installer: `python3 tools/fm1_install.py audiobase-@VERSION@.fwsc`.
+          Install from the browser at https://stevexfer.github.io/FM1_Locus/ (Chrome or Edge, the FM-1 connected by USB), or with the command-line installer: `python3 tools/fm1_install.py locus-@VERSION@.fwsc`.
 
-          `audiobase-@VERSION@.fwsc` is the package (48 kHz); `SHA256SUMS` lists its SHA-256. The package holds three JieLi AC79 SDK files (Apache-2.0); `LICENSE`, `LICENSING.md` and `LICENSES.zip` carry every licence (GPL-3.0-only; Terminus font, OFL 1.1; JieLi SDK files, Apache-2.0). The complete source of this release is the tag v@VERSION@.
+          `locus-@VERSION@.fwsc` is the package (48 kHz); `SHA256SUMS` lists its SHA-256. The package holds three JieLi AC79 SDK files (Apache-2.0); `LICENSE`, `LICENSING.md` and `LICENSES.zip` carry every licence (GPL-3.0-only; Terminus font, OFL 1.1; JieLi SDK files, Apache-2.0; the resonator and granular DSP, from Emilie Gillet's eurorack code, MIT). The complete source of this release is the tag v@VERSION@.
 
-          **Installing custom firmware is at your own risk.** FM1_AudioBase is provided as is, without any warranty.
+          **Installing custom firmware is at your own risk.** FM1_Locus is provided as is, without any warranty.
           EOT
           } > release-body.md
 
@@ -162,7 +162,7 @@ jobs:
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           tag_name: ${{ github.ref_name }}
-          name: FM1_AudioBase ${{ needs.build.outputs.version }}
+          name: FM1_Locus ${{ needs.build.outputs.version }}
           prerelease: ${{ contains(needs.build.outputs.version, '-') }}
           generate_release_notes: true
           fail_on_unmatched_files: true

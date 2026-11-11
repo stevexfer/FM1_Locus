@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
-/* AudioBase's visualizer (GLO): the sound's waveform, fed back on itself. See avis.c. */
+/* LOCUS's visualizer (GLO): the sound's waveform, fed back on itself. See avis.c. */
 #ifndef AVIS_H
 #define AVIS_H
 #include <stdint.h>

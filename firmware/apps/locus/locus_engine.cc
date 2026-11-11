@@ -42,7 +42,7 @@ alignas(8) uint8_t rings_mem[sizeof(rings::Part)] FW_POOL;
 alignas(8) uint8_t clouds_mem[sizeof(clouds::GranularProcessor)] FW_POOL;
 alignas(8) uint8_t clouds_large[kCloudsLarge] FW_POOL;
 alignas(8) uint8_t clouds_small[kCloudsSmall];
-alignas(8) uint8_t strummer_mem[sizeof(rings::Strummer)];
+alignas(8) uint8_t strummer_mem[sizeof(rings::Strummer)] FW_POOL;
 
 rings::Part* part;
 rings::Strummer* strummer;
@@ -74,8 +74,8 @@ struct Batch {
 Batch batch[2] FW_POOL;
 int cur;
 
-float down_h[2][kDownTaps];
-float up_h[3][kUpTaps];
+float down_h[2][kDownTaps] FW_POOL;
+float up_h[3][kUpTaps] FW_POOL;
 float down_x[2][kDownTaps - 1 + kTick] FW_POOL;      // the 48 kHz input, its history first
 float up_x[2][kUpTaps - 1 + kCloudsTick] FW_POOL;    // the 32 kHz output, its history first
 
@@ -99,7 +99,7 @@ volatile uint32_t rings_us, locus_us;
 
 int model_set = -1, poly_set = -1;
 float in_level;
-float res_in[kTick];
+float res_in[kTick] FW_POOL;
 
 // the granular processor's tick at 48 kHz (the second core's, while a batch runs)
 float usb_l[kTick] FW_POOL;

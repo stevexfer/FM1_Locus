@@ -1,9 +1,9 @@
 # Developing on the platform
 
-FM1_AudioBase is one app on a small firmware platform for the FM-1 (JieLi AC79, pi32v2 core), cut down from
-[ORBIT](https://github.com/dspaudio/orbit) (ORBIT ← SLOOP ← Felucca) for GATOR, then carried by MOOD_FM1. The
-hardware-proven parts are kept: the HAL, the update loader, USB-MIDI, USB audio, OTA, flash storage and the `.fwsc`
-packer. Everything else is a thin API for apps.
+FM1_Locus is one app on a small firmware platform for the FM-1 (JieLi AC79, pi32v2 core), cut down from
+[ORBIT](https://github.com/dspaudio/orbit) (ORBIT ← SLOOP ← Felucca) for GATOR, then carried by MOOD_FM1 and
+FM1_AudioBase. The hardware-proven parts are kept: the HAL, the update loader, USB-MIDI, USB audio, OTA, flash
+storage and the `.fwsc` packer. Everything else is a thin API for apps.
 
 | | |
 |---|---|
@@ -57,6 +57,9 @@ static void app_frame(const fw_input_t *in);          // main loop, ~66 Hz
 static void app_audio(int32_t *lr, uint32_t frames);  // INTERRUPT: frames = 256, LRLR…, ±32767
 ```
 
+Optional: `#define APP_IDLE` and `static void app_idle(void)`, called over and over in the main loop's spare time
+between frames (background work that the interrupt must not wait for: LOCUS prepares its granular buffers there).
+
 `fw_input_t`, per frame:
 
 | Field | What |
@@ -93,12 +96,14 @@ at most 240×124, so a screen is drawn in strips. Fonts: `FONT_S` (16 px), `FONT
 - **The second core** (`sys/core1.c`, `hal/fm1_cpu1.h`): from `app_audio`, `fw_core1_run(fn, arg)` hands it one job
   (1 = taken; 0 = do the work here), `fw_core1_wait()` before using what it wrote (-1: it gave up and is held, do its
   work here, one core from then on). The job must touch only what this core leaves alone until the wait; it runs from
-  the flash on a 4 KB stack, with the FPU.
+  the flash on a 4 KB stack, with the FPU. The wait gives up after 4 ms: give core 0 its own share of the work
+  before waiting (LOCUS: the resonator here, the granular processor there), so that a slow first job (cold caches)
+  does not lose the second core for good.
 - **float only outside `app.c`.** The unity build (`fw.c` and `app.c`) is built without the FPU, as ORBIT is, where
   `float` would be slow software emulation (the build fails if any is linked). The app's other `*.c` and its `*.cc`
   are built with the single-precision FPU (`-mcpu=r3 -mfprev1`, as the AC79 SDK); they reach `app.c` with integers
-  and pointers only (`apps/audiobase/ab_fw.h`: functions `app.c` defines for them, not `static`). The FPU has no `double`. Static constructors do not run: create such objects with
-  placement new in `app_init` (the build fails on `.init_array`).
+  and pointers only (`apps/locus/ab_fw.h`: functions `app.c` defines for them, not `static`). The FPU has no
+  `double`. Static constructors do not run: create such objects with placement new in `app_init` (the build fails on `.init_array`).
 - **Do not block `app_frame` for more than a few seconds:** the watchdog (~8 s) restarts the device.
 - No `malloc` and no libc: static buffers only. Mark large buffers `FW_POOL` (336 KB, ~58 KB of it the canvas; the
   build keeps 8 KB free).
@@ -111,9 +116,31 @@ at most 240×124, so a screen is drawn in strips. Fonts: `FONT_S` (16 px), `FONT
 - At start the VDC14 / SYSVDD supplies are raised to M-VAVE's stock levels (`fm1_supplies_stock`, from SLOOP 2.7 /
   X0X 1.0.9): at the loader's levels some units misread flash and SRAM.
 
-The package format, the loader and the OTA protocol are those of SLOOP / ORBIT, so FM1_AudioBase installs and is
+The package format, the loader and the OTA protocol are those of SLOOP / ORBIT, so FM1_Locus installs and is
 replaced the same way they are. The USB descriptors stay Felucca's (VID:PID 1209:0001); an app names the device with
 `FW_USB_PRODUCT` (build.txt), which must contain "FM-1" so that the installers find it.
+
+## LOCUS
+
+`firmware/apps/locus/`:
+
+| File | |
+|---|---|
+| `app.c` | pages, parameters, drawing, keys, MIDI, LEDs, save / load (no float) |
+| `locus.h` | what `app.c` shares with the FPU files: the parameters (`le_param`, `ls_param`), the patterns, the views |
+| `locus_engine.cc` | the resonator (Rings' `Part` and `Strummer`) and the granular processor (Clouds' `GranularProcessor`), the routing |
+| `locus_seq.c` | the step sequencer and the four chance processes, one call per 48-frame tick |
+| `avis.c` | the GLO visualizer |
+
+The engine works in ticks of 48 frames: two resonator blocks of 24 at the codec's rate, one granular block of 32
+at two thirds of it, through a 3 : 2 polyphase resampler (a 96-tap windowed sinc). An interrupt's 256 frames are
+5 or 6 ticks, a batch: core 0 renders the resonator for this batch while core 1 runs the granular processor and the
+mix of the previous one, so the output is one batch late (304 frames in the FIFO). The parameters are copied once
+per tick into each batch, so neither core reads the other's changing state. `GranularProcessor::Prepare` (its
+buffers, the stretcher's search, the spectral mode's FFTs) runs in `app_idle` and once per frame.
+
+The eurorack code is vendored at fixed commits in `third_party/eurorack/` (MIT) and patched only where the FM-1
+needs it, each patch marked `FM1_Locus` and listed in `PATCHES.md`. All of it is linked (no `--gc-sections`).
 
 ## USB audio
 

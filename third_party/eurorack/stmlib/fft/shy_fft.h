@@ -296,7 +296,7 @@ struct DirectTransform {
 
           v = s2r[j] * c - s2i[j] * s;
           dr[j] = s1r[j] + v;
-          di[-j] = s1r[j] - v;
+          *(di - j) = s1r[j] - v;  // FM1_Locus: was di[-j]
 
           v = s2r[j] * s + s2i[j] * c;
           di[j] = v + s1i[j];
@@ -394,7 +394,7 @@ struct DirectTransform {
 
           v = s2r[j] * c - s2i[j] * s;
           dr[j] = s1r[j] + v;
-          di[-j] = s1r[j] - v;
+          *(di - j) = s1r[j] - v;  // FM1_Locus: was di[-j]
 
           v = s2r[j] * s + s2i[j] * c;
           di[j] = v + s1i[j];
@@ -477,12 +477,12 @@ struct InverseTransform {
         T* d2i = d1i + n;
         phasor->Start(pass);
         for (size_t j = 1; j < n_2; ++j) {
-          d1r[j] = sr[j] + si[-j];
+          d1r[j] = sr[j] + *(si - j);
           d1i[j] = si[j] - si[n - j];
           
           T c = phasor->cos();
           T s = phasor->sin();
-          T vr = sr[j] - si[-j];
+          T vr = sr[j] - *(si - j);
           T vi = si[j] + si[n - j];
           
           d2r[j] = vr * c + vi * s;
@@ -578,12 +578,12 @@ struct InverseTransform {
         T* d2i = d1i + n;
         phasor->Start(pass);
         for (size_t j = 1; j < n_2; ++j) {
-          d1r[j] = sr[j] + si[-j];
+          d1r[j] = sr[j] + *(si - j);
           d1i[j] = si[j] - si[n - j];
           
           T c = phasor->cos();
           T s = phasor->sin();
-          T vr = sr[j] - si[-j];
+          T vr = sr[j] - *(si - j);
           T vi = si[j] + si[n - j];
           
           d2r[j] = vr * c + vi * s;

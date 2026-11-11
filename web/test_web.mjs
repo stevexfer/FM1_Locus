@@ -2,7 +2,7 @@
 // Copyright (C) 2026 npi3pak
 // The installer's protocol against a fake FM-1 on a fake Web MIDI: the running firmware, its update loader and the
 // restart, every byte served compared with the image tools/fm1_install.py derives from the same package.
-//   node web/test_web.mjs [build/audiobase.fwsc]
+//   node web/test_web.mjs [build/locus.fwsc]
 import { readFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
@@ -14,7 +14,7 @@ const realTimeout = globalThis.setTimeout;
 globalThis.setTimeout = (f, ms = 0) => realTimeout(f, ms / 50);
 globalThis.crypto ??= webcrypto;
 
-const pkgPath = process.argv[2] ?? "build/audiobase.fwsc";
+const pkgPath = process.argv[2] ?? "build/locus.fwsc";
 const raw = new Uint8Array(readFileSync(pkgPath));
 const results = [];
 const ok = (cond, what) => {

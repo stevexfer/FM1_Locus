@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-only
 # Publish the web installer on GitHub Pages for a release.
-#   workflow_dispatch (version, ref) -> download audiobase-VERSION.fwsc from the release vVERSION,
+#   workflow_dispatch (version, ref) -> download locus-VERSION.fwsc from the release vVERSION,
 #                                       check them against its SHA256SUMS, web/make_site.py --release, deploy to Pages
 # release.yml starts it after it made the release. Settings -> Pages -> Source must be "GitHub Actions".
 name: pages
@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version to publish, e.g. 0.1 (the release v0.1 must carry audiobase-0.1.fwsc)"
+        description: "Version to publish, e.g. 0.1 (the release v0.1 must carry locus-0.1.fwsc)"
         required: true
         type: string
       ref:
@@ -63,7 +63,7 @@ jobs:
           set -euo pipefail
           rel="build/release-$VERSION"
           mkdir -p "$rel"
-          for f in "audiobase-$VERSION.fwsc" SHA256SUMS; do
+          for f in "locus-$VERSION.fwsc" SHA256SUMS; do
             if ! gh release download "v$VERSION" --repo "$GITHUB_REPOSITORY" --pattern "$f" --dir "$rel" --clobber; then
               echo "::error title=No $f in v$VERSION::The release v$VERSION does not exist or has no asset $f. Push the tag v$VERSION so release.yml builds it, then run pages.yml again."
               exit 1
@@ -76,7 +76,7 @@ jobs:
           set -euo pipefail
           python3 web/make_site.py --release "build/release-$VERSION"
           for f in index.html installer.js fm1ota.js fm1pkg.js firmware/manifest.json firmware/SHA256SUMS \
-                   firmware/LICENSE firmware/LICENSING.md "firmware/audiobase-$VERSION.fwsc"; do
+                   firmware/LICENSE firmware/LICENSING.md "firmware/locus-$VERSION.fwsc"; do
             if [ ! -s "build/site/$f" ]; then
               echo "::error::build/site/$f is missing"
               exit 1

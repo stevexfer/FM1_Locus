@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
-/* AudioBase's visualizer (GLO), MOOD_FM1's audio visualizer (mood_avis.c): what is heard, as a picture that feeds on
+/* LOCUS's visualizer (GLO), MOOD_FM1's audio visualizer (mood_avis.c): what is heard, as a picture that feeds on
  * itself.
  *
  * Each frame the picture before is drawn again turned and zoomed about its middle, a little darker, and the sound's

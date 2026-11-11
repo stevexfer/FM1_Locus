@@ -28,6 +28,8 @@ Each changed line is marked `FM1_Locus`.
   (4097 entries; harmless on the module, ×0); now the last entry itself.
 - `clouds/dsp/grain.h`, `granular_sample_player.h`, `granular_processor.h`: read-only `view_*` accessors for the
   display (the recording's size, head and samples; each grain's position and envelope).
+- `stmlib/fft/shy_fft.h`: `di[-j]` and `si[-j]` (`j` unsigned) are `*(di - j)` and `*(si - j)`: the same address,
+  without an unsigned index wrapping (undefined behaviour the host simulator's sanitizer catches).
 
 ## Notes
 

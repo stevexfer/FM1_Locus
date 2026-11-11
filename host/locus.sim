@@ -1,26 +1,112 @@
-# the computer plays a 1 kHz sine at -6 dBFS: MASTER full, half (-12 dB more), off; then the visualizer (GLO) and back
-frames 20
-usbtone 1000 -6
+# LOCUS: the computer plays a 220 Hz tone into it; the keys strum the resonator into the granular processor; a tour
+# of the pages, the sequencer and each chance mode, freeze, the spectral mode, then the visualizer and the settings
+frames 10
+usbtone 220 -18
 usbrec 2
-frames 40
-screen build/host/out/audiobase.ppm
-master 512
-frames 40
-screen build/host/out/audiobase_half.ppm
-master 0
-frames 40
-master 1023
+frames 30
+key 7
+frames 2
+key 7 up
 frames 20
-btn GLO down
+key 11
+frames 2
+key 11 up
+frames 40
+screen build/host/out/locus_res.ppm
+knob K1 20
+knob SELECT 1
+frames 10
+screen build/host/out/locus_res_turned.ppm
+btn FX
 frames 1
-btn GLO up
+btn FX up
+key 14
+frames 2
+key 14 up
+knob K3 -10
+frames 60
+screen build/host/out/locus_loc.ppm
+btn FX
+frames 1
+btn FX up
+frames 20
+screen build/host/out/locus_blend.ppm
+btn SCL
+frames 1
+btn SCL up
+knob K1 40
+frames 20
+screen build/host/out/locus_route.ppm
+btn SEQ
+frames 1
+btn SEQ up
+key 2
+frames 1
+key 2 up
+key 9
+frames 1
+key 9 up
+key 20
+frames 1
+key 20 up
+btn PLAY
+frames 1
+btn PLAY up
 frames 120
-screen build/host/out/audiobase_vis.ppm
-leds
-btn GLO down
+screen build/host/out/locus_seq.ppm
+btn ARP
+frames 1
+btn ARP up
+knob SELECT 2
+knob K1 30
+frames 200
+screen build/host/out/locus_lorenz.ppm
+knob SELECT 1
+frames 150
+screen build/host/out/locus_automaton.ppm
+knob SELECT 1
+knob K2 40
+frames 200
+screen build/host/out/locus_drip.ppm
+knob SELECT -3
+frames 150
+screen build/host/out/locus_geiger.ppm
+btn REC
+frames 1
+btn REC up
+btn FX
+frames 1
+btn FX up
+frames 40
+screen build/host/out/locus_frozen.ppm
+btn REC
+frames 1
+btn REC up
+knob SELECT 3
+frames 60
+screen build/host/out/locus_spectral.ppm
+knob SELECT -3
+btn GLO
 frames 1
 btn GLO up
+frames 90
+screen build/host/out/locus_vis.ppm
+btn GLO
+frames 1
+btn GLO up
+frames 20
+screen build/host/out/locus_global.ppm
+btn GLO
+frames 1
+btn GLO up
+frames 10
+btn SAVE
+frames 1
+btn SAVE up
 frames 5
-screen build/host/out/audiobase_back.ppm
-leds
-wav build/host/out/audiobase.wav
+btn SAVE
+frames 1
+btn SAVE up
+frames 10
+screen build/host/out/locus_saved.ppm
+wav build/host/out/locus.wav

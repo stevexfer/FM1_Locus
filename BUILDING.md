@@ -1,4 +1,4 @@
-# Building FM1_AudioBase
+# Building FM1_Locus
 
 ## What you need
 
@@ -13,11 +13,11 @@ SDK checkout instead. `tools/build.py` checks their SHA-256.
 ```bash
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 sh tools/get_toolchain.sh
-PYTHON=.venv/bin/python ./build.sh                 # build/audiobase.fwsc   (48 kHz)
+PYTHON=.venv/bin/python ./build.sh                 # build/locus.fwsc       (48 kHz)
 PYTHON=.venv/bin/python ./build.sh --app demo      # build/demo.fwsc        (the small demo synth)
 ```
 
-Options: `--app NAME` (`firmware/apps/NAME`, default `audiobase`), `--fs 48|44` (the codec clock,
+Options: `--app NAME` (`firmware/apps/NAME`, default `locus`), `--fs 48|44` (the codec clock,
 `firmware/sys/fw_rate.h`: 48 kHz by default; 44 is for comparison, and its USB audio runs at 44.1 kHz), `--name NAME` (the package's file name), `--release X.Y` (identity `FM-1_9XY`, version
 `X.Y` on the splash). Environment: `FW_UART=0` (no TRS MIDI), `FW_UBOOT_COMBO=0` (no OCT−+OCT+ 5 s), `FELUCCA_OTA_DRYRUN=1`
 (an update runs to the end but writes nothing), `JOBS=N` (parallel C++ compiles). C++ is rebuilt incrementally
@@ -31,7 +31,7 @@ routines, no `.init_array`, and no register access outside `firmware/hal/`.
 ```bash
 pip install mido python-rtmidi
 python3 tools/fm1_install.py --info               # identity of the connected FM-1
-python3 tools/fm1_install.py build/audiobase.fwsc
+python3 tools/fm1_install.py build/locus.fwsc
 ```
 
 Or from the browser: `python3 web/make_site.py` makes the installer site from the local builds in `build/site`;
@@ -41,14 +41,15 @@ or HTTPS).
 ## Host simulator and tests
 
 The app's code runs on the host against a stub HAL, built with ASan and UBSan (any finding fails the run): sound to
-WAV, the screen to PNG. It says nothing about timing or CPU load: that is measured on the device only.
+WAV, the screen to PNG. It says nothing about timing or CPU load (the emulator, below, and the device do), and it
+runs on one core.
 
 ```bash
-.venv/bin/python tools/sim.py                      # host/audiobase.sim -> build/host/out/*.png, audiobase.wav
+.venv/bin/python tools/sim.py                      # host/locus.sim -> build/host/out/*.png, locus.wav
 .venv/bin/python tools/sim.py --app demo
 .venv/bin/python tools/sim.py --test               # storage test (A/B slots, an interrupted write)
-node web/test_web.mjs build/audiobase.fwsc         # the installer's protocol against an emulated FM-1
-sh tests/update_tests.sh build/audiobase.fwsc build/app.bin   # OTA and loader (STOCK_V15 / STOCK_V16: M-VAVE's files)
+node web/test_web.mjs build/locus.fwsc             # the installer's protocol against an emulated FM-1
+sh tests/update_tests.sh build/locus.fwsc build/app.bin       # OTA and loader (STOCK_V15 / STOCK_V16: M-VAVE's files)
 ```
 
 A script is a list of lines: `frames N`, `key K down|up`, `btn PLAY down|up`, `knob K1 3`, `master 800`,
@@ -65,12 +66,16 @@ the USB host): the computer plays a file to the FM-1's USB audio output and reco
 # tone.raw: s16le stereo at 48 kHz, no header
 FM1_AUDIO_FRAME_NS=20800 FM1_USB_PLAY=tone.raw FM1_USB_WAV=rec.raw FM1_USB_RATE=48000 \
   FM1_BENCH_WAV=out.raw FM1_BENCH_PANEL=panel.ppm FM1_BENCH_KEYS='0:pot:1023,2500:pot:512,3000:GLO,3100:GLO^' \
-  ../FM-1Ception/target/release/fm1-live --fwsc build/audiobase.fwsc --usb --bench 5000
+  ../FM-1Ception/target/release/fm1-live --fwsc build/locus.fwsc --usb --bench 5000
 ```
 
 `out.raw` is the codec's output (the emulator reads its words >> 8: 6 dB under the USB stream), `rec.raw` what the
 computer recorded, `panel.ppm` the panel at the end. `FM1_BENCH_KEYS`: `MS:pot:N` the MASTER pot, `MS:NAME` /
-`MS:NAME^` a button down / up.
+`MS:NAME^` a button or key down / up (`PLAY`, `GLO`, `OCTUP`, keys `n0`..`n26` or `C4`), `MS:eN:CLICKS` an encoder
+(N: SELECT 0, ALGORITHM 1, PRESETS 6, KNOB 1–4 2–5). The firmware takes about 1.2 s to start: input before that is
+lost. `FM1_DUMPRAM=ram.bin` writes the RAM at the end (from 0x01C00000: `fw_stats`, the engine's `rings_us` and
+`locus_us`, the second core's state, via `build/app.sym`); `--flash FILE` keeps the flash between runs (save, then
+load).
 
 ## Releasing
 
@@ -79,7 +84,7 @@ A release is a tag `vX.Y` (one digit each: the package identity is `FM-1_9XY`).
 1. Add `docs/releases/X.Y.md` (the release notes) and commit.
 2. `git tag v0.1 && git push origin v0.1`.
 3. `.github/workflows/release.yml` builds the package (`tools/release.py`), runs the simulator and the installer
-   test, and creates the GitHub release with `audiobase-X.Y.fwsc`, `SHA256SUMS` and the licences.
+   test, and creates the GitHub release with `locus-X.Y.fwsc`, `SHA256SUMS` and the licences.
 4. It then starts `.github/workflows/pages.yml`, which takes the package from the release, checks it against
    `SHA256SUMS`, makes the site (`web/make_site.py --release`) and deploys it to GitHub Pages.
 

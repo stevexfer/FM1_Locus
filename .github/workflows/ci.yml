@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-only
-# Build and test every push and pull request: the FM1_AudioBase package and the demo app (the JieLi toolchain, natively on
+# Build and test every push and pull request: the FM1_Locus package and the demo app (the JieLi toolchain, natively on
 # ubuntu x86-64), the host simulator under ASan / UBSan, the storage test and the installer's protocol.
 name: ci
 
@@ -74,6 +74,6 @@ jobs:
       - name: Installer protocol and site
         run: |
           set -euo pipefail
-          node web/test_web.mjs build/audiobase.fwsc
+          node web/test_web.mjs build/locus.fwsc
           python3 web/make_site.py
           (cd build/site/firmware && sha256sum -c SHA256SUMS)

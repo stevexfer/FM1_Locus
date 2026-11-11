@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-// Headless FM-1 runner for FM1_AudioBase on FM1Ception's engine (fm1-emu).
+// Headless FM-1 runner for FM1_Locus on FM1Ception's engine (fm1-emu).
 //
 //   fm1run FIRMWARE.fwsc SCRIPT [OUTDIR]
 //
@@ -106,7 +106,7 @@ int main (int argc, char** argv)
 
     Fm1e* e = fm1e_create();
     fm1e_set_lead (e, 2048);
-    if (fm1e_boot (e, "FM1_AudioBase", pkg.data(), pkg.size(), nullptr, 0) != 0)
+    if (fm1e_boot (e, "FM1_Locus", pkg.data(), pkg.size(), nullptr, 0) != 0)
     {
         std::fprintf (stderr, "fm1run: boot failed\n");
         return 1;
@@ -258,7 +258,7 @@ int main (int argc, char** argv)
             std::vector<uint8_t> flash (fm1e_flash (e, nullptr, 0));
             fm1e_flash (e, flash.data(), flash.size());
             fm1e_unload (e);
-            if (fm1e_boot (e, "FM1_AudioBase", pkg.data(), pkg.size(), flash.data(), flash.size()) != 0)
+            if (fm1e_boot (e, "FM1_Locus", pkg.data(), pkg.size(), flash.data(), flash.size()) != 0)
             {
                 std::fprintf (stderr, "line %d: reboot failed\n", lineNo);
                 return 1;

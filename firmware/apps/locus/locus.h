@@ -44,6 +44,49 @@ extern volatile int16_t le_param[LP_COUNT];
 #define LE_EV_ACCENT 4u
 void le_event(uint32_t flags, int32_t note);   /* main loop only: queued for the next tick */
 
+/* ---- the sequencer and the chance triggers (locus_seq.c, run once a tick in the interrupt) */
+#define LS_STEPS 32
+#define LS_PATTERNS 8
+#define LS_ON 1u
+#define LS_ACCENT 2u
+#define LS_GRAIN 4u       /* the step seeds a grain too */
+typedef struct {
+    uint8_t flags;
+    uint8_t note;         /* MIDI */
+} ls_step_t;
+typedef struct {
+    ls_step_t step[LS_STEPS];
+    uint8_t length;       /* 1..32 */
+    uint8_t pad[3];
+} ls_pattern_t;
+extern ls_pattern_t ls_pat[LS_PATTERNS];   /* the main loop edits them; the interrupt reads them */
+
+enum {
+    LS_PLAY,              /* 0 / 1 */
+    LS_BPM,               /* 30..300 */
+    LS_SWING,             /* 0..700: how much later the off-beat 16ths come, permille of a step */
+    LS_PATTERN,           /* 0..7: the next one to play (from the end of the playing one) */
+    LS_TRANSPOSE,         /* -24..24 semitones on the steps' and the chance triggers' notes */
+    LS_CHANCE,            /* 0 off, 1 geiger, 2 lorenz, 3 automaton, 4 drip */
+    LS_RATE,              /* 0..1000 */
+    LS_SHAPE,             /* 0..1000: each mode's own (bursts, chaos, rule, the faucet's flow) */
+    LS_TARGET,            /* 0 resonator, 1 grains, 2 both */
+    LS_COUNT
+};
+extern volatile int16_t ls_param[LS_COUNT];
+
+/* what the interrupt shows the display */
+typedef struct {
+    volatile uint8_t step;          /* the playing step, 0..31 */
+    volatile uint8_t pattern;       /* the playing pattern */
+    volatile uint32_t steps;        /* steps played (a change: a new one) */
+    volatile uint32_t chances;      /* chance triggers fired */
+    volatile uint32_t cells;        /* the automaton's row, a bit a cell */
+    volatile int16_t x, y, z;       /* the Lorenz state x 100 / the faucet's 0..1000 in x */
+} ls_view_t;
+extern ls_view_t ls_view;
+void ls_init(void);
+
 void le_init(void);                                       /* app_init: placement new, the pool's buffers */
 void le_render(int16_t* out, const int16_t* usb, uint32_t frames);   /* the interrupt: LR LR, usb NULL = silence */
 void le_prepare(void);   /* the main loop, as often as it can: the granular processor's background work (buffers, the
